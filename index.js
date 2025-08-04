@@ -5,7 +5,6 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_FILE = path.resolve(__dirname, 'ip_to_uuid.json');
-
 let ipToUUID = {};
 
 // Load IP->UUID map from disk if it exists
@@ -25,7 +24,13 @@ function saveMap() {
   });
 }
 
-const server = http.createServer();
+const port = process.env.PORT || 10000; // Render sets this
+const server = http.createServer((req, res) => {
+  // Simple health check endpoint
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('WebSocket server is running.\n');
+});
+
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws, req) => {
@@ -66,7 +71,6 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-const PORT = 8080;
-server.listen(PORT, () => {
-  console.log(`WebSocket server running on ws://localhost:${PORT}`);
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
